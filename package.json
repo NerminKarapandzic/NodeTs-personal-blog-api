@@ -15,10 +15,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@prisma/client": "^3.8.1",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.13",
     "dotenv": "^14.3.2",
-    "express": "^4.17.2"
+    "express": "^4.17.2",
+    "prisma": "^3.8.1"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
