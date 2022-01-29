@@ -7,9 +7,9 @@
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
     "prestart": "npm run build",
-    "start": "nodemon src/app.js",
-    "dev": "nodemon",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/app.js",
+    "watch": "tsc -w",
+    "dev": "nodemon dist/app.js"
   },
   "keywords": [],
   "author": "",
