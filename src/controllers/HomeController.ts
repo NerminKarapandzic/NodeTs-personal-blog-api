@@ -1,8 +1,16 @@
+import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 
 class HomeController{
-    public index(req: Request, res: Response){
-        return res.end('There is no place like 127.0.0.1 ...')
+    prisma: PrismaClient;
+
+    constructor(){
+        this.prisma = new PrismaClient()
+    }
+
+    public index = async (req: Request, res: Response) => {
+        const posts = await this.prisma.post.findMany();
+        res.send(JSON.stringify(posts))
     }
 }
 
