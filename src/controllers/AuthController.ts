@@ -2,7 +2,7 @@ import { prisma, PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import  {createUserSchema, loginSchema}  from "../validators/AuthValidators";
 import bcrypt from 'bcryptjs'
-import { AuthResponse, UserResponse } from "../models/UserDto";
+import { AuthResponse, UserResponse } from "../dto/UserDto";
 import { TokenUtil } from "../security/TokenUtil";
 class AuthController{
 
