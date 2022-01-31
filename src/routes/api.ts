@@ -14,8 +14,9 @@ router.post('/auth/login', AuthController.login)
 
 //posts
 router.get('/posts', [PostsController.getList])
-router.get('/posts/:post', [PostsController.getSingle])
+router.get('/posts/featured', [PostsController.getFeatured])
 router.post('/posts/create', [authenticationFilter, PostsController.create])
+router.get('/posts/:post', [PostsController.getSingle])
 router.put('/posts/:post/update', [authenticationFilter, PostsController.update])
 
 //user

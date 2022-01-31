@@ -117,6 +117,26 @@ class PostsController{
             res.status(400).send()
         }
     }
+
+    public getFeatured = async (req:Request, res: Response) => {
+        try{
+            const post = await this.prisma.post.findFirst({
+                where: {
+                    featured: true,
+                    published: true
+                },
+                include: {
+                    author: true
+                }
+            })
+
+            const response = new PostResponseDto(post, post.author)
+
+            res.send(response)
+        }catch (error) {
+            res.status(400).send()
+        }
+    }
 }
 
 export default new PostsController();
