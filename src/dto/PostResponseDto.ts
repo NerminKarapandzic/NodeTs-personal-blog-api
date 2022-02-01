@@ -7,6 +7,7 @@ export class PostResponseDto{
     title: string
     content: string
     author: UserResponse
+    image: string
 
     constructor(post: Post, author: User){
         this.id = post.id
@@ -14,5 +15,6 @@ export class PostResponseDto{
         this.title = post.title
         this.content = post.content
         this.author = new UserResponse(author)
+        this.image = post.image
     }
 }

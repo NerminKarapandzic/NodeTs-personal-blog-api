@@ -19,6 +19,7 @@ model Post {
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
   featured  Boolean  @default(false)
+  image     String   @db.VarChar(255)
 }
 
 model User {

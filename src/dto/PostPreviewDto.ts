@@ -6,11 +6,13 @@ export class PostPreviewDto{
     createdAt: Date
     title: string
     author: UserResponse
+    image: string
 
     constructor(post: Post, author: User){
         this.id = post.id
         this.createdAt = post.createdAt
         this.title = post.title
         this.author = new UserResponse(author)
+        this.image = post.image
     }
 }

@@ -57,6 +57,7 @@ class PostsController{
         post.content = validation.value.content
         post.title = validation.value.title
         post.published = validation.value.published
+        post.image = validation.value.image
 
         try {
             const updatedPost = await this.prisma.post.update({

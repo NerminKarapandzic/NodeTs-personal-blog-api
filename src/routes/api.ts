@@ -5,6 +5,8 @@ import AuthController from "../controllers/AuthController";
 import HomeController from "../controllers/HomeController";
 import PostsController from "../controllers/PostsController";
 import UserController from "../controllers/UserController";
+import { upload } from "../middleware/fileUpload";
+import FilesController from "../controllers/FilesController";
 
 const router: Router = Router()
 
@@ -22,5 +24,8 @@ router.put('/posts/:post/update', [authenticationFilter, PostsController.update]
 //user
 router.get('/user/posts', [authenticationFilter, UserController.getPosts])
 router.get('/user/userinfo', [authenticationFilter, UserController.getUserInfo])
+
+//files
+router.post('/files/upload', [authenticationFilter, upload, FilesController.upload])
 
 export default router;
