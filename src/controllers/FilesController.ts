@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from 'async_hooks';
 import { Response } from 'express';
 import fileUpload from 'express-fileupload';
 import { s3 } from '../config/awsS3';
@@ -15,7 +16,8 @@ class FilesController{
             awsS3.upload({
                 Bucket: process.env.SPACES_BUCKET,
                 Key: 'personal-blog-dev/' + files.name,
-                Body: files.data
+                Body: files.data,
+                ACL: 'public-read'
             }).promise().then( uploadResponse => {
                 res.status(201).send(uploadResponse)
             }).catch(err => {
