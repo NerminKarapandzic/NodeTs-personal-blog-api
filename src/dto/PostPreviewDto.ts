@@ -7,6 +7,7 @@ export class PostPreviewDto{
     title: string
     author: UserResponse
     image: string
+    published: boolean
 
     constructor(post: Post, author: User){
         this.id = post.id
@@ -14,5 +15,6 @@ export class PostPreviewDto{
         this.title = post.title
         this.author = new UserResponse(author)
         this.image = post.image
+        this.published = post.published
     }
 }

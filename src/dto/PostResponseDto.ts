@@ -8,13 +8,15 @@ export class PostResponseDto{
     content: string
     author: UserResponse
     image: string
+    published: boolean
 
     constructor(post: Post, author: User){
         this.id = post.id
         this.createdAt = post.createdAt
         this.title = post.title
-        this.content = post.content
+        this.content = JSON.parse(post.content)
         this.author = new UserResponse(author)
         this.image = post.image
+        this.published = post.published
     }
 }

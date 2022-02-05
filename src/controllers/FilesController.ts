@@ -1,12 +1,10 @@
 import { AsyncLocalStorage } from 'async_hooks';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import fileUpload from 'express-fileupload';
 import { s3 } from '../config/awsS3';
-import { AppRequest } from '../types/AppRequest';
-
 class FilesController{
     
-    public upload = (req: AppRequest, res: Response) => {
+    public upload = (req: Request, res: Response) => {
         const awsS3 = s3;
 
         if(req.files.files){

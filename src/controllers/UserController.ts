@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Response } from "express";
 import { UserResponse } from "../dto/UserDto";
-import { AppRequest } from "../types/AppRequest";
+import { AppRequestBody } from "../types/AppRequest";
 
 class UserController{
     prisma: PrismaClient
@@ -10,7 +10,7 @@ class UserController{
         this.prisma = new PrismaClient()
     }
 
-    public getUserInfo = async (req: AppRequest, res: Response) => {
+    public getUserInfo = async (req: AppRequestBody<any>, res: Response) => {
         const user = req.user
 
         const userFromDb = await this.prisma.user.findUnique({
@@ -22,7 +22,7 @@ class UserController{
         res.send(new UserResponse(userFromDb))
     }
 
-    public getPosts = async (req: AppRequest, res: Response) => {
+    public getPosts = async (req: AppRequestBody<any>, res: Response) => {
         const user = req.user
 
         const posts = await this.prisma.post.findMany({

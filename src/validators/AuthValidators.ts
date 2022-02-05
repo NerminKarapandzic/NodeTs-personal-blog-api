@@ -1,13 +1,7 @@
 import Joi from "joi";
+import { CreateUserRequest, LoginRequest } from "../request/AuthRequest";
 
 
-export const createUserSchema = Joi.object({
-    email: Joi.string().email().required(),
-    name: Joi.string().min(3).max(30).alphanum().required(),
-    password: Joi.string().min(6).required()
-})
+export const createUserSchema = Joi.object(new CreateUserRequest())
 
-export const loginSchema = Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().min(6).required()
-})
+export const loginSchema = Joi.object(new LoginRequest())

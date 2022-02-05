@@ -1,5 +1,8 @@
 import { Request } from "express";
 
-export interface AppRequest extends Request{
+
+export type RequestBody<T> = Request<{}, {}, T>;
+
+export interface AppRequestBody<T> extends RequestBody<T> {
     user: any
 }
