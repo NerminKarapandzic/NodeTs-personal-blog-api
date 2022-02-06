@@ -15,8 +15,6 @@ export class PostService{
     public async createPost(reqBody: CreatePostRequest, user: any): Promise<PostResponseDto>{
         const postReq = new CreatePostRequest(reqBody.title, reqBody.content, reqBody.image)
         
-        postReq.content = JSON.stringify(postReq.content)
-        
         console.log('Trying to save post to a database, post data:', postReq);
         
         const post = await this.prisma.post.create({
@@ -77,8 +75,12 @@ export class PostService{
             }
         })
 
-        const response = new PostResponseDto(post, post.author)
-        return response
+        if(post && post.author) {
+            const response = new PostResponseDto(post, post.author)
+            return response
+        }else{
+            throw new ApplicationException('Could not find any featured posts', 404)
+        }
     }
 
     public async update(id: number, user: any, reqBody: UpdatePostRequest): Promise<PostResponseDto>{

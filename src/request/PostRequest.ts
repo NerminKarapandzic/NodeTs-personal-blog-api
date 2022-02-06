@@ -17,7 +17,7 @@ export class CreatePostRequest{
 
     protected validate = (req: any) => {
         try{
-            JSON.parse(this.content)
+            const c = JSON.parse(this.content)
         }catch(error){
             throw new ApplicationException('Content must be JSON (stringified)', 422)
         }
@@ -35,20 +35,21 @@ export class CreatePostRequest{
     }
 }
   
-export class UpdatePostRequest extends CreatePostRequest{
+export class UpdatePostRequest{
+    title: string
+    content: string
+    image: string
     published: boolean
 
     constructor(title: string, content: string, image: string, published: boolean){
-        super(title, content, image)
+        this.title = title
+        this.content = content
+        this.image = image
         this.published = published
+        this.validate({title, content, image, published})
     }
 
-    protected validate = (req: CreatePostRequest) => {
-        try{
-            JSON.parse(this.content)
-        }catch(error){
-            throw new ApplicationException('Content must be JSON (stringified)', 422)
-        }
+    protected validate = (req: any) => {
 
         const validation = Joi.object({
             title: Joi.string().required(),

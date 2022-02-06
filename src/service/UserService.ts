@@ -7,6 +7,7 @@ export class UserService {
     prisma: PrismaClient = new PrismaClient()
 
     public async getUserPosts(userId: number): Promise<PostPreviewDto[]>{
+        console.log('Getting user posts for user id:', userId)
         const posts = await this.prisma.post.findMany({
             where: {
                 authorId: userId
@@ -15,8 +16,8 @@ export class UserService {
                 author: true
             }
         })
-
-        return posts.map( post => new PostPreviewDto(post, post.author))
+        const response: PostPreviewDto[] = posts.map(post => new PostPreviewDto(post, post.author))
+        return response
     }
 
     public async getUserInfo(userId: number): Promise<UserResponse>{

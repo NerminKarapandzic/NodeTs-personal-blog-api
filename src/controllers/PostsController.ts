@@ -58,10 +58,13 @@ export class PostsController extends Controller{
     }
 
     private getSingle = async (req: Request, res: Response, next: NextFunction) => {
-        const postId = +req.params.post
+        const postId = +req.params.id
 
         try{
             const response = await this.postService.getSingle(postId)
+            console.log(JSON.parse(response.content))
+            
+            
             res.send(response)
         }catch (error) {
             next(error)
