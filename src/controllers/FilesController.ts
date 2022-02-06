@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { FileService } from '../service/FileService';
 import { authenticationFilter } from '../middleware/authenticationFilter';
-import { s3 } from '../config/awsS3';
 import { Controller } from './Controller';
 export class FilesController extends Controller{
 
-    //TODO: Create request types, validate data, move logic to services
+    fileService: FileService = new FileService()
 
     constructor(path: string){
         super(path)
@@ -15,23 +15,12 @@ export class FilesController extends Controller{
         this.router.post('/upload', [authenticationFilter, this.upload])
     }
     
-    public upload = (req: Request, res: Response) => {
-        const awsS3 = s3;
-
-        if(req.files.files){
-            const files: any = req.files.files;
-            console.log(files);
-
-            awsS3.upload({
-                Bucket: process.env.SPACES_BUCKET,
-                Key: 'personal-blog-dev/' + files.name,
-                Body: files.data,
-                ACL: 'public-read'
-            }).promise().then( uploadResponse => {
-                res.status(201).send(uploadResponse)
-            }).catch(err => {
-                res.status(400).send(err)  
-            })
-        }
+    public upload = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const response = await this.fileService.upload(req.files)
+            res.send(response)
+        } catch (error) {
+            next(error)
+        }    
     }
 }

@@ -1,11 +1,16 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import bcrypt from 'bcryptjs'
 import { AuthResponse, UserResponse } from "../dto/UserDto";
 import { TokenUtil } from "../security/TokenUtil";
 import { Controller } from "./Controller";
+import { AuthService } from "../service/AuthService";
+import { AppRequestBody } from "../types/AppRequest";
+import { CreateUserRequest } from "../request/AuthRequest";
+import { nextTick } from "process";
 export class AuthController extends Controller{
 
     //TODO: Create request types, validate data, move logic to services
+    authService: AuthService = new AuthService()
 
     constructor(path: string){
         super(path)
@@ -17,41 +22,23 @@ export class AuthController extends Controller{
         this.router.post(`${this.path}/login`, this.login)
     }
 
-    public register = async (req: Request, res: Response) => {
+    public register = async (req: AppRequestBody<CreateUserRequest>, res: Response, next: NextFunction) => {
 
-        
         try{
-            const user = await this.prisma.user.create({
-                data: null
-            })
-
-            const response: UserResponse = new UserResponse(user)
-
+            const response = await this.authService.register(req.body)
             res.send(response)
-        } catch (e) {
-            res.status(400).send(e)
+        } catch (error) {
+            next(error)
         }
     }
 
-    public login = async (req: Request, res: Response) => {
-        //TODO: Create dto and validation
-
+    public login = async (req: Request, res: Response, next: NextFunction) => {
         try{
-            const user = await this.prisma.user.findUnique({
-                where: {
-                    email: req.body.email
-                }
-            })
-
-            if(!user || !bcrypt.compareSync(req.body.password, user.password)){
-                return res.status(401).send()
-            }
-            
-            const response: AuthResponse = new AuthResponse(TokenUtil.generateToken(user))
+            const response = await this.authService.login(req.body)
             
             res.send(response)
-        }catch (e) {
-            res.status(400).send(e)
+        }catch (error) {
+            next(error)
         }
     }
 }

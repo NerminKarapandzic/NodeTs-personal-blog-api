@@ -1,14 +1,15 @@
 import { PrismaClient } from "@prisma/client";
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { authenticationFilter } from "../middleware/authenticationFilter";
 import { UserResponse } from "../dto/UserDto";
 import { AppRequestBody } from "../types/AppRequest";
 import { Controller } from "./Controller";
+import { UserService } from "../service/UserService";
 
 export class UserController extends Controller{
     
-    //TODO: Create request types, validate data, move logic to services
-
+    userService: UserService = new UserService()
+    
     constructor(path: string){
         super(path)
         this.initializeRoutes()
@@ -19,27 +20,27 @@ export class UserController extends Controller{
         this.router.get('/posts', [authenticationFilter, this.getPosts])
     }
 
-    public getUserInfo = async (req: AppRequestBody<any>, res: Response) => {
+    public getUserInfo = async (req: AppRequestBody<any>, res: Response, next: NextFunction) => {
         const user = req.user
 
-        const userFromDb = await this.prisma.user.findUnique({
-            where: {
-                id: user.id
-            }
-        })
-
-        res.send(new UserResponse(userFromDb))
+        try {
+            const response = this.userService.getUserInfo(user.id)
+            res.send(response)
+        } catch (error) {
+            next(error)
+        }
     }
 
-    public getPosts = async (req: AppRequestBody<any>, res: Response) => {
+    public getPosts = async (req: AppRequestBody<any>, res: Response, next: NextFunction) => {
         const user = req.user
 
-        const posts = await this.prisma.post.findMany({
-            where: {
-                authorId: user.id
-            }
-        })
+        try {
+            const response = this.userService.getUserPosts(user.id)
+            
+            res.send(response)
+        } catch (error) {
+            next(error)
+        }
 
-        res.send(posts)
     }
 }
