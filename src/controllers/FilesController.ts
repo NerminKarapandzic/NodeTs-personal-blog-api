@@ -1,8 +1,19 @@
-import { AsyncLocalStorage } from 'async_hooks';
 import { Request, Response } from 'express';
-import fileUpload from 'express-fileupload';
+import { authenticationFilter } from '../middleware/authenticationFilter';
 import { s3 } from '../config/awsS3';
-class FilesController{
+import { Controller } from './Controller';
+export class FilesController extends Controller{
+
+    //TODO: Create request types, validate data, move logic to services
+
+    constructor(path: string){
+        super(path)
+        this.initializeRoutes()
+    }
+
+    private initializeRoutes(){
+        this.router.post('/upload', [authenticationFilter, this.upload])
+    }
     
     public upload = (req: Request, res: Response) => {
         const awsS3 = s3;
@@ -24,5 +35,3 @@ class FilesController{
         }
     }
 }
-
-export default new FilesController()

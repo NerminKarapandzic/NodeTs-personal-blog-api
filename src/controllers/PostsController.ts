@@ -1,123 +1,92 @@
-import { PrismaClient } from "@prisma/client";
-import { Request, Response } from "express";
-import { AppRequestBody, RequestBody } from "../types/AppRequest";
-import { PostPreviewDto } from "../dto/PostPreviewDto";
+import { NextFunction, Request, Response } from "express";
+import { AppRequestBody } from "../types/AppRequest";
 import { PostResponseDto } from "../dto/PostResponseDto";
 import { CreatePostRequest, UpdatePostRequest } from "../request/PostRequest";
-import { CreateUserRequest } from "../request/AuthRequest";
+import { Controller } from "./Controller";
+import { authenticationFilter } from "../middleware/authenticationFilter";
+import { PostService } from "../service/PostService";
 
-class PostsController{
-    prisma: PrismaClient;
+export class PostsController extends Controller{
 
-    constructor(){
-        this.prisma = new PrismaClient()
+    private postService: PostService
+
+    constructor(path: string){
+        super(path)
+        this.initializeRoutes()
+        this.postService = new PostService()
     }
 
-    public create = async (req: AppRequestBody<CreatePostRequest>, res: Response) => {
+    private initializeRoutes(){
+        this.router.get(this.path, this.getList)
+        this.router.get(`${this.path}/featured`, this.getFeatured)
+        this.router.get(`${this.path}/:id`, this.getSingle)
+        this.router.post(this.path, [authenticationFilter, this.create])
+        this.router.put(`${this.path}/:id`, [authenticationFilter, this.update])
+        this.router.patch(`${this.path}/:id/published`, [authenticationFilter, this.patchPublished])
+    }
+
+    private create = async (req: AppRequestBody<CreatePostRequest>, res: Response, next: NextFunction) => {
         console.log('Create post controller invoked with following request body:', req.body);
-        
-        const postReq = new CreatePostRequest(req.body)
-        
         try {
-            postReq.validate()
+            const postResponse: PostResponseDto = await this.postService.createPost(req.body, req.user)
+            res.send(postResponse)
         } catch (error) {
-            console.log('Error was caught, error', error);
-            
-        }
-
-        postReq.content = JSON.stringify(postReq.content)
-        
-        try {
-            console.log('Trying to save post to a database, post data:', postReq);
-            
-            const post = await this.prisma.post.create({
-                data: {...postReq, author: req.user.id}
-            })
-
-            res.send(post)
-        } catch (error) {
-            console.log('Failed while trying to save post to a database, error:', error);
-            
-            res.status(400).send(error)
+            next(error)
         }
     }
 
-    public update = async (req: AppRequestBody<UpdatePostRequest>, res: Response) => {
-        //Refactoring needed
+    private update = async (req: AppRequestBody<UpdatePostRequest>, res: Response, next: NextFunction) => {
+        console.log(`Update post endpoint called wit the following id param: ${+req.params.id}`)
+        try {
+            const response = await this.postService.update(+req.params.id, req.user, req.body)
+            res.send(response)
+        } catch (error) {
+            next(error)
+        }
     }
 
-    public getList = async (req: Request, res: Response) => {
+    private getList = async (req: Request, res: Response, next: NextFunction) => {
         const skip = +req.query.skip
-        const limit = req.query.limit
+        const limit = +req.query.limit
 
         try{
-            const posts = await this.prisma.post.findMany({
-                take: 5,
-                skip: skip ? skip : 0,
-                include: {
-                    author: true
-                },
-                where: {
-                    published: true
-                }
-            })
-
-            const response = posts.map( post => new PostPreviewDto(post, post.author))
-
+            const response = await this.postService.getPosts(limit, skip)
             res.send(response)
         }catch (error) {
-            res.status(400).send()
+            next(error)
         }
     }
 
-    public getSingle = async (req: Request, res: Response) => {
+    private getSingle = async (req: Request, res: Response, next: NextFunction) => {
         const postId = +req.params.post
 
         try{
-            const post = await this.prisma.post.findFirst({
-                where: {
-                    id: postId,
-                    published: true
-                },
-                include: {
-                    author: true
-                }
-            })
-
-            if(post){
-                const response = new PostResponseDto(post, post.author)
-                res.send(response)
-            }else{
-                res.send({error: {
-                    message: 'Post not found'
-                }})
-            }
-            
-
+            const response = await this.postService.getSingle(postId)
+            res.send(response)
         }catch (error) {
-            res.status(400).send(error)
+            next(error)
         }
     }
 
-    public getFeatured = async (req:Request, res: Response) => {
+    private getFeatured = async (req:Request, res: Response, next: NextFunction) => {
         try{
-            const post = await this.prisma.post.findFirst({
-                where: {
-                    featured: true,
-                    published: true
-                },
-                include: {
-                    author: true
-                }
-            })
-
-            const response = new PostResponseDto(post, post.author)
+            const response = await this.postService.getFeatured()
 
             res.send(response)
         }catch (error) {
-            res.status(400).send()
+            next(error)
+        }
+    }
+
+    private patchPublished = async (req:AppRequestBody<any>, res: Response, next: NextFunction) => {
+        console.log(`Patch published method on post controller called wit the following id param: ${+req.params.id}, 
+        new published value: ${req.body.published}, user: `, req.user)
+        try{
+            const response = await this.postService.patchPublished(+req.params.id, req.body.published, req.user)
+
+            res.send(response)
+        }catch (error) {
+            next(error)
         }
     }
 }
-
-export default new PostsController();

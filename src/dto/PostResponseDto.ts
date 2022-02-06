@@ -14,7 +14,7 @@ export class PostResponseDto{
         this.id = post.id
         this.createdAt = post.createdAt
         this.title = post.title
-        this.content = JSON.parse(post.content)
+        this.content = JSON.parse(post.content || '')
         this.author = new UserResponse(author)
         this.image = post.image
         this.published = post.published
