@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Tag } from "@prisma/client";
 import { PostResponseDto } from "../dto/PostResponseDto";
 import { CreatePostRequest, UpdatePostRequest } from "../request/PostRequest";
 import { PostPreviewDto } from "../dto/PostPreviewDto";
@@ -13,35 +13,42 @@ export class PostService{
     }
 
     public async createPost(reqBody: CreatePostRequest, user: any): Promise<PostResponseDto>{
-        const postReq = new CreatePostRequest(reqBody.title, reqBody.content, reqBody.image)
+        const postReq = new CreatePostRequest(reqBody.title, reqBody.content, reqBody.image, reqBody.tags)
         
         console.log('Trying to save post to a database, post data:', postReq);
-        
+
         const post = await this.prisma.post.create({
             data: {
                 title: postReq.title, 
                 image: postReq.image,
                 content: postReq.content, 
-                authorId: user && user.id
+                author: {connect: {id: user.id}},
+                tags: {
+                    connect: reqBody.tags.map(tag => ({id: tag.id}))
+                }
+            },
+            include: {
+                tags: true
             }
         })
 
-        return new PostResponseDto(post, user);
+        return new PostResponseDto(post, user, post.tags);
     }
 
     public async getPosts(limit: number, skip: number): Promise<PostPreviewDto[]>{
         const posts = await this.prisma.post.findMany({
             take: 5,
-            skip: skip ? skip : 0,
+            skip: skip || 0,
             include: {
-                author: true
+                author: true,
+                tags: true
             },
             where: {
                 published: true
             }
         })
 
-        const response: PostPreviewDto[] = posts.map( post => new PostPreviewDto(post, post.author))
+        const response: PostPreviewDto[] = posts.map( post => new PostPreviewDto(post, post.author, post.tags))
         return response;
     }
 
@@ -52,12 +59,13 @@ export class PostService{
                 published: true
             },
             include: {
-                author: true
+                author: true,
+                tags: true
             }
         })
 
         if(post){
-            const response = new PostResponseDto(post, post.author)
+            const response = new PostResponseDto(post, post.author, post.tags)
             return response
         }else{
             throw new ApplicationException(`Post with id ${id} not found`, 404)
@@ -71,12 +79,13 @@ export class PostService{
                 published: true
             },
             include: {
-                author: true
+                author: true,
+                tags: true
             }
         })
 
         if(post && post.author) {
-            const response = new PostResponseDto(post, post.author)
+            const response = new PostResponseDto(post, post.author, post.tags)
             return response
         }else{
             throw new ApplicationException('Could not find any featured posts', 404)
@@ -84,7 +93,7 @@ export class PostService{
     }
 
     public async update(id: number, user: any, reqBody: UpdatePostRequest): Promise<PostResponseDto>{
-        const postReq = new UpdatePostRequest(reqBody.title, reqBody.content, reqBody.image, reqBody.published)
+        const postReq = new UpdatePostRequest(reqBody.title, reqBody.content, reqBody.image, reqBody.published, reqBody.tags)
 
         const post = await this.prisma.post.findUnique({
             where: {
@@ -113,14 +122,18 @@ export class PostService{
                 content: post.content,
                 title: post.title,
                 image: post.image,
-                published: post.published
+                published: post.published,
+                tags: {
+                    connect: reqBody.tags.map(tag => ({id: tag.id}))
+                }
             },
             include: {
-                author: true
+                author: true,
+                tags: true
             }
         })
 
-        return new PostResponseDto(updatedPost, updatedPost.author);
+        return new PostResponseDto(updatedPost, updatedPost.author, updatedPost.tags);
     }
 
     public async patchPublished(id: number, published: boolean, user: any): Promise<PostResponseDto>{
@@ -152,11 +165,12 @@ export class PostService{
                 published: published
             },
             include: {
-                author: true
+                author: true,
+                tags: true
             }
         })
         
-        return new PostResponseDto(updatedPost, updatedPost.author);
+        return new PostResponseDto(updatedPost, updatedPost.author, updatedPost.tags);
     }
 
 

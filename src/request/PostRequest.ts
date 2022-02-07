@@ -6,21 +6,23 @@ export class CreatePostRequest{
     title: string
     content: string
     image: string
+    tags: Tag[]
 
-    constructor(title: string, content: string, image: string ){
+    constructor(title: string, content: string, image: string, tags: Tag[] ){
         console.log('Post request constructor called')
         this.title = title
         this.content = content
         this.image = image
+        this.tags = tags
         this.validate({title, content, image})
     }
 
     protected validate = (req: any) => {
-        try{
+        /* try{
             const c = JSON.parse(this.content)
         }catch(error){
             throw new ApplicationException('Content must be JSON (stringified)', 422)
-        }
+        } */
 
         const validation = Joi.object({
             title: Joi.string().required(),
@@ -40,12 +42,14 @@ export class UpdatePostRequest{
     content: string
     image: string
     published: boolean
+    tags: Tag[]
 
-    constructor(title: string, content: string, image: string, published: boolean){
+    constructor(title: string, content: string, image: string, published: boolean, tags: Tag[]){
         this.title = title
         this.content = content
         this.image = image
         this.published = published
+        this.tags = tags
         this.validate({title, content, image, published})
     }
 
@@ -55,7 +59,8 @@ export class UpdatePostRequest{
             title: Joi.string().required(),
             content: Joi.string().required(),
             image: Joi.string().required(),
-            published: Joi.boolean().required()
+            published: Joi.boolean().required(),
+            tagId: Joi.number().required()
         }).validate(req)
 
         if(validation.error){
@@ -63,4 +68,10 @@ export class UpdatePostRequest{
             throw new ValidationException('Invalid data', validation.error.details)
         }
     }
+}
+
+interface Tag {
+    id: number,
+    name: string,
+    color: string
 }

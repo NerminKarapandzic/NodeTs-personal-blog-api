@@ -1,4 +1,4 @@
-import { Post, User } from "@prisma/client"
+import { Post, Tag, User } from "@prisma/client"
 import { UserResponse } from './UserDto'
 
 export class PostPreviewDto{
@@ -8,13 +8,15 @@ export class PostPreviewDto{
     author: UserResponse
     image: string
     published: boolean
+    tags: Tag[]
 
-    constructor(post: Post, author: User){
+    constructor(post: Post, author: User, tags: Tag[]){
         this.id = post.id
         this.createdAt = post.createdAt
         this.title = post.title
         this.author = new UserResponse(author)
         this.image = post.image
         this.published = post.published
+        this.tags = tags
     }
 }
