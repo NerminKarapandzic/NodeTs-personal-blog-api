@@ -13,10 +13,11 @@ export class UserService {
                 authorId: userId
             },
             include: {
-                author: true
+                author: true,
+                tags: true
             }
         })
-        const response: PostPreviewDto[] = posts.map(post => new PostPreviewDto(post, post.author))
+        const response: PostPreviewDto[] = posts.map(post => new PostPreviewDto(post, post.author, post.tags))
         return response
     }
 

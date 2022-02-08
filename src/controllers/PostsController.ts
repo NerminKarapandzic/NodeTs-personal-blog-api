@@ -36,7 +36,7 @@ export class PostsController extends Controller{
     }
 
     private update = async (req: AppRequestBody<UpdatePostRequest>, res: Response, next: NextFunction) => {
-        console.log(`Update post endpoint called wit the following id param: ${+req.params.id}`)
+        console.log(`Update post endpoint called wit the following id param: ${+req.params.id}, body: `, req.body)
         try {
             const response = await this.postService.update(+req.params.id, req.user, req.body)
             res.send(response)

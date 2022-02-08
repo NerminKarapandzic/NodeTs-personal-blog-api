@@ -50,7 +50,7 @@ export class UpdatePostRequest{
         this.image = image
         this.published = published
         this.tags = tags
-        this.validate({title, content, image, published})
+        this.validate({title, content, image, published, tags})
     }
 
     protected validate = (req: any) => {
@@ -60,7 +60,7 @@ export class UpdatePostRequest{
             content: Joi.string().required(),
             image: Joi.string().required(),
             published: Joi.boolean().required(),
-            tagId: Joi.number().required()
+            tags: Joi.required()
         }).validate(req)
 
         if(validation.error){

@@ -98,6 +98,9 @@ export class PostService{
         const post = await this.prisma.post.findUnique({
             where: {
                 id: id
+            },
+            include: {
+                tags: true
             }
         })
 
@@ -113,6 +116,19 @@ export class PostService{
         post.title = postReq.title
         post.image = postReq.image
         post.published = postReq.published
+
+        //TODO: send tags with additional property defining if it should be connected or disconnected
+
+        await this.prisma.post.update({
+            where: {
+                id: post.id
+            },
+            data: {
+                tags: {
+                    disconnect: post.tags.map(tag => ({id: tag.id}))
+                }
+            }
+        })
 
         const updatedPost = await this.prisma.post.update({
             where: {
