@@ -19,6 +19,7 @@ export class PostsController extends Controller{
     private initializeRoutes(){
         this.router.get(this.path, this.getList)
         this.router.get(`${this.path}/featured`, this.getFeatured)
+        this.router.get(`${this.path}/search`, this.search)
         this.router.get(`${this.path}/:id`, this.getSingle)
         this.router.post(this.path, [authenticationFilter, this.create])
         this.router.put(`${this.path}/:id`, [authenticationFilter, this.update])
@@ -82,13 +83,23 @@ export class PostsController extends Controller{
     }
 
     private patchPublished = async (req:AppRequestBody<any>, res: Response, next: NextFunction) => {
-        console.log(`Patch published method on post controller called wit the following id param: ${+req.params.id}, 
-        new published value: ${req.body.published}, user: `, req.user)
         try{
             const response = await this.postService.patchPublished(+req.params.id, req.body.published, req.user)
 
             res.send(response)
         }catch (error) {
+            next(error)
+        }
+    }
+
+    private search = async(req: Request, res: Response, next: NextFunction) => {
+        const searchTerm = req.query.search.toString()
+
+        try {
+            const response = await this.postService.search(searchTerm)
+
+            res.send(response)
+        } catch (error) {
             next(error)
         }
     }

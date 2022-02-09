@@ -3,6 +3,7 @@ import { PostResponseDto } from "../dto/PostResponseDto";
 import { CreatePostRequest, UpdatePostRequest } from "../request/PostRequest";
 import { PostPreviewDto } from "../dto/PostPreviewDto";
 import { ApplicationException } from "../exception/ApplicationException";
+import { PostsWithCount } from "../dto/PostsWithCount";
 
 export class PostService{
 
@@ -35,7 +36,7 @@ export class PostService{
         return new PostResponseDto(post, user, post.tags);
     }
 
-    public async getPosts(limit: number, skip: number): Promise<PostPreviewDto[]>{
+    public async getPosts(limit: number, skip: number): Promise<PostsWithCount>{
         const posts = await this.prisma.post.findMany({
             take: 5,
             skip: skip || 0,
@@ -47,9 +48,10 @@ export class PostService{
                 published: true
             }
         })
+        const count = await this.prisma.post.count()
 
-        const response: PostPreviewDto[] = posts.map( post => new PostPreviewDto(post, post.author, post.tags))
-        return response;
+        const _posts: PostPreviewDto[] = posts.map( post => new PostPreviewDto(post, post.author, post.tags))
+        return new PostsWithCount(_posts, count);
     }
 
     public async getSingle(id: number): Promise<PostResponseDto>{
@@ -189,5 +191,23 @@ export class PostService{
         return new PostResponseDto(updatedPost, updatedPost.author, updatedPost.tags);
     }
 
+    public async search(searchTerm: string){
+        const posts = await this.prisma.post.findMany({
+            where: {
+                title: {
+                    contains: searchTerm
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                author: true,
+                tags: true
+            }
+        })
 
+        const response: PostPreviewDto[] = posts.map( post => new PostPreviewDto(post, post.author, post.tags))
+        return response;
+    }
 }
