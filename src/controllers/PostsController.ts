@@ -64,8 +64,8 @@ export class PostsController extends Controller{
         try{
             const response = await this.postService.getSingle(postId)
             console.log(JSON.parse(response.content))
-            
-            
+
+
             res.send(response)
         }catch (error) {
             next(error)

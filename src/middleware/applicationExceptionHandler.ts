@@ -15,5 +15,5 @@ function applicationExceptionHandler(error: ApplicationException, request: Reque
       next(error)
     }
   }
-   
+
   export default applicationExceptionHandler;

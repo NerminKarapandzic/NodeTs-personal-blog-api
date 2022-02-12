@@ -6,7 +6,7 @@ import { AppRequestBody } from "../types/AppRequest"
 /**
  * This middleware is responsible for attaching the user object to the request
  * It's not registered as global middleware but rather only on the endpoints where we need the user to be authenticated
- * 
+ *
  */
 export const authenticationFilter = (req: AppRequestBody<LoginRequest>, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization

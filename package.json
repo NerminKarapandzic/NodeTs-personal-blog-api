@@ -9,7 +9,9 @@
     "prestart": "npm run build",
     "start": "node dist/server.js",
     "watch": "tsc -w",
-    "dev": "nodemon dist/server.js"
+    "dev": "nodemon dist/server.js",
+    "build-prod-win": "SET NODE_ENV=prod && tsc && node dist/server.js",
+    "build-prod-lin": "NODE_ENV=prod && tsc && node dist/server.js"
   },
   "keywords": [],
   "author": "",

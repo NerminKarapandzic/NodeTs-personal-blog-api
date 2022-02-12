@@ -32,7 +32,7 @@ export class AuthService{
         if(!user || !bcrypt.compareSync(req.password, user.password)){
             throw new ApplicationException('Unauthorized', 401)
         }
-        
+
         const response: AuthResponse = new AuthResponse(TokenUtil.generateToken(user))
         return response;
     }

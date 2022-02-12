@@ -8,7 +8,7 @@ export class FileService{
             throw new ApplicationException('Files not received', 400)
         }
         const files: any = requestFiles.files;
-        
+
         const awsS3 = s3;
 
         return awsS3.upload({

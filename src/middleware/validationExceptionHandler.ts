@@ -13,12 +13,12 @@ function validationExceptionHandler(error: ValidationException, request: Request
         .status(error.status)
         .send({
           status: error.status,
-          message: message,
+          message,
           errors: error.errors
         })
     }else{
       next(error)
     }
   }
-   
+
   export default validationExceptionHandler;

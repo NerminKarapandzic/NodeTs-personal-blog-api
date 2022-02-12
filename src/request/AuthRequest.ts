@@ -2,8 +2,8 @@ import Joi from "joi"
 import { ValidationException } from "../exception/ValidationException"
 
 export class CreateUserRequest{
-    email: string 
-    name: string 
+    email: string
+    name: string
     password: string
 
     constructor(email: string, name: string, password: string){
@@ -28,8 +28,8 @@ export class CreateUserRequest{
 }
 
 export class LoginRequest{
-    email: string 
-    name: string 
+    email: string
+    name: string
     password: string
 
     constructor(email: string, name: string, password: string){

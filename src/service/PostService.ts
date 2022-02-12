@@ -15,14 +15,14 @@ export class PostService{
 
     public async createPost(reqBody: CreatePostRequest, user: any): Promise<PostResponseDto>{
         const postReq = new CreatePostRequest(reqBody.title, reqBody.content, reqBody.image, reqBody.tags)
-        
+
         console.log('Trying to save post to a database, post data:', postReq);
 
         const post = await this.prisma.post.create({
             data: {
-                title: postReq.title, 
+                title: postReq.title,
                 image: postReq.image,
-                content: postReq.content, 
+                content: postReq.content,
                 author: {connect: {id: user.id}},
                 tags: {
                     connect: reqBody.tags.map(tag => ({id: tag.id}))
@@ -57,7 +57,7 @@ export class PostService{
     public async getSingle(id: number): Promise<PostResponseDto>{
         const post = await this.prisma.post.findFirst({
             where: {
-                id: id,
+                id,
                 published: true
             },
             include: {
@@ -99,7 +99,7 @@ export class PostService{
 
         const post = await this.prisma.post.findUnique({
             where: {
-                id: id
+                id
             },
             include: {
                 tags: true
@@ -109,7 +109,7 @@ export class PostService{
         if(!post){
             throw new ApplicationException(`Post with id ${id} not found`, 404)
         }
-        
+
         if(post.authorId != user.id){
             throw new ApplicationException('Forbidden', 403)
         }
@@ -119,7 +119,7 @@ export class PostService{
         post.image = postReq.image
         post.published = postReq.published
 
-        //TODO: send tags with additional property defining if it should be connected or disconnected
+        // TODO: send tags with additional property defining if it should be connected or disconnected
 
         await this.prisma.post.update({
             where: {
@@ -161,14 +161,14 @@ export class PostService{
 
         const post = await this.prisma.post.findUnique({
             where: {
-                id: id
+                id
             }
         })
 
         if(!post){
             throw new ApplicationException(`Post with id ${id} not found`, 404)
         }
-        
+
         if(post.authorId != user.id){
             throw new ApplicationException('Forbidden', 403)
         }
@@ -180,14 +180,14 @@ export class PostService{
                     id: post.id
                 },
             data: {
-                published: published
+                published
             },
             include: {
                 author: true,
                 tags: true
             }
         })
-        
+
         return new PostResponseDto(updatedPost, updatedPost.author, updatedPost.tags);
     }
 

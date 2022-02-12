@@ -9,7 +9,7 @@ import { CreateUserRequest } from "../request/AuthRequest";
 import { nextTick } from "process";
 export class AuthController extends Controller{
 
-    //TODO: Create request types, validate data, move logic to services
+    // TODO: Create request types, validate data, move logic to services
     authService: AuthService = new AuthService()
 
     constructor(path: string){
@@ -35,7 +35,7 @@ export class AuthController extends Controller{
     public login = async (req: Request, res: Response, next: NextFunction) => {
         try{
             const response = await this.authService.login(req.body)
-            
+
             res.send(response)
         }catch (error) {
             next(error)
