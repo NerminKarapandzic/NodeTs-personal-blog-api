@@ -11,9 +11,7 @@
     "watch": "tsc -w",
     "dev": "nodemon dist/server.js",
     "build-prod-win": "SET NODE_ENV=prod && tsc && node dist/server.js",
-    "build-prod-lin": "NODE_ENV=prod && tsc && node dist/server.js",
-    "prisma-migrate-local": "npx prisma migrate dev", 
-    "prisma-migrate-prod": "dotenv -e .env.prod -- npx prisma migrate deploy"
+    "build-prod-lin": "NODE_ENV=prod && tsc && node dist/server.js"
   },
   "keywords": [],
   "author": "",
