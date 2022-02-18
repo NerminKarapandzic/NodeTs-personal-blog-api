@@ -11,12 +11,12 @@ export class TagsService{
 
     public async createTag(reqBody: CreateTagsRequest): Promise<Tag>{
         const postReq = new CreateTagsRequest(reqBody.name, reqBody.color)
-        
+
         console.log('Trying to save tag to a database, tag data:', postReq);
 
         const tag = await this.prisma.tag.create({
             data: {
-                name: postReq.name, 
+                name: postReq.name,
                 color: postReq.color
             },
         })

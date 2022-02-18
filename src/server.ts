@@ -15,5 +15,5 @@ const controllers: Controller[] =  [
 ]
 
 const app = new App(controllers);
-   
+
 app.listen();

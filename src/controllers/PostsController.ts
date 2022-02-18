@@ -24,10 +24,10 @@ export class PostsController extends Controller{
         this.router.post(this.path, [authenticationFilter, this.create])
         this.router.put(`${this.path}/:id`, [authenticationFilter, this.update])
         this.router.patch(`${this.path}/:id/published`, [authenticationFilter, this.patchPublished])
+        this.router.patch(`${this.path}/:id/featured`, [authenticationFilter, this.patchFeatured])
     }
 
     private create = async (req: AppRequestBody<CreatePostRequest>, res: Response, next: NextFunction) => {
-        console.log('Create post controller invoked with following request body:', req.body);
         try {
             const postResponse: PostResponseDto = await this.postService.createPost(req.body, req.user)
             res.send(postResponse)
@@ -37,7 +37,6 @@ export class PostsController extends Controller{
     }
 
     private update = async (req: AppRequestBody<UpdatePostRequest>, res: Response, next: NextFunction) => {
-        console.log(`Update post endpoint called wit the following id param: ${+req.params.id}, body: `, req.body)
         try {
             const response = await this.postService.update(+req.params.id, req.user, req.body)
             res.send(response)
@@ -63,8 +62,6 @@ export class PostsController extends Controller{
 
         try{
             const response = await this.postService.getSingle(postId)
-            console.log(JSON.parse(response.content))
-
 
             res.send(response)
         }catch (error) {
@@ -85,6 +82,16 @@ export class PostsController extends Controller{
     private patchPublished = async (req:AppRequestBody<any>, res: Response, next: NextFunction) => {
         try{
             const response = await this.postService.patchPublished(+req.params.id, req.body.published, req.user)
+
+            res.send(response)
+        }catch (error) {
+            next(error)
+        }
+    }
+
+    private patchFeatured = async (req:AppRequestBody<any>, res: Response, next: NextFunction) => {
+        try{
+            const response = await this.postService.patchFeatured(+req.params.id, req.body.featured, req.user)
 
             res.send(response)
         }catch (error) {

@@ -18,7 +18,7 @@ export class AuthController extends Controller{
     }
 
     private initializeRoutes(){
-        this.router.post(`${this.path}/register`, this.register)
+        // this.router.post(`${this.path}/register`, this.register)
         this.router.post(`${this.path}/login`, this.login)
     }
 

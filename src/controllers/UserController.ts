@@ -6,7 +6,7 @@ import { UserService } from "../service/UserService";
 import { UserResponse } from "../dto/UserDto";
 
 export class UserController extends Controller{
-    
+
     userService: UserService = new UserService()
 
     constructor(path: string){
@@ -29,7 +29,7 @@ export class UserController extends Controller{
 
         try {
             const response = await this.userService.getUserPosts(user.id)
-            
+
             res.send(response)
         } catch (error) {
             next(error)

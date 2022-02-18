@@ -16,8 +16,6 @@ export class PostService{
     public async createPost(reqBody: CreatePostRequest, user: any): Promise<PostResponseDto>{
         const postReq = new CreatePostRequest(reqBody.title, reqBody.content, reqBody.image, reqBody.tags)
 
-        console.log('Trying to save post to a database, post data:', postReq);
-
         const post = await this.prisma.post.create({
             data: {
                 title: postReq.title,
@@ -181,6 +179,43 @@ export class PostService{
                 },
             data: {
                 published
+            },
+            include: {
+                author: true,
+                tags: true
+            }
+        })
+
+        return new PostResponseDto(updatedPost, updatedPost.author, updatedPost.tags);
+    }
+
+    public async patchFeatured(id: number, featured: boolean, user: any): Promise<PostResponseDto>{
+        if(featured == null){
+            throw new ApplicationException('Parameter published is required', 422)
+        }
+
+        const post = await this.prisma.post.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if(!post){
+            throw new ApplicationException(`Post with id ${id} not found`, 404)
+        }
+
+        if(post.authorId != user.id){
+            throw new ApplicationException('Forbidden', 403)
+        }
+
+        post.featured = featured
+
+        const updatedPost = await this.prisma.post.update({
+            where: {
+                    id: post.id
+                },
+            data: {
+                featured
             },
             include: {
                 author: true,

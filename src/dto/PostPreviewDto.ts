@@ -9,6 +9,7 @@ export class PostPreviewDto{
     image: string
     published: boolean
     tags: Tag[]
+    featured: boolean
 
     constructor(post: Post, author: User, tags: Tag[]){
         this.id = post.id
@@ -18,5 +19,6 @@ export class PostPreviewDto{
         this.image = post.image
         this.published = post.published
         this.tags = tags
+        this.featured = post.featured
     }
 }
